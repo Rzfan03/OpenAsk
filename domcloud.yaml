@@ -1,4 +1,0 @@
-commands:
-- node -e "console.log('hello')"
-features:
-- node

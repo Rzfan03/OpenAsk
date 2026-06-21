@@ -65,44 +65,13 @@ cloudflared tunnel --url http://localhost:20130
 
 The dashboard provides a Tunnel page to start/stop tunnels.
 
-## DOMCloud
+## Docker Compose
 
-[DOMCloud](https://domcloud.co) is an Indonesian PaaS.
-
-### Setup
-
-A `domcloud.yaml` is at the project root — DOMCloud auto-detects it.
-
-```yaml
-commands:
-- cd dashboard && npm install && npm run build
-features:
-- node
-nginx:
-  root: dashboard/dist
-  passenger:
-    enabled: on
-    app_env: production
-    app_start_command: cd dashboard && env PORT=$PORT node_modules/.bin/tsx server/index.ts
+```bash
+docker compose up -d --build
 ```
 
-### Manual Steps
-
-1. Push code to GitHub
-2. DOMCloud dashboard → **New App** → **Connect GitHub**
-3. Set **Persistent Storage** → mount at `dashboard/server/prisma/`
-4. Set **HTTP Port** → `20130`
-5. Deploy
-
-Persistent Storage is required — SQLite database must survive deploys.
-
-### Post-Deploy
-
-1. Open the app URL
-2. Login with `admin123`
-3. Change the password immediately
-4. Add API keys for your providers
-5. Set a working directory
+Serves on `http://localhost:20130`. SQLite database persists in a Docker volume.
 
 ## Environment Variables
 

@@ -1,0 +1,11 @@
+services:
+  openask:
+    build: .
+    ports:
+      - "20130:20130"
+    volumes:
+      - openask-data:/app/server/prisma
+    restart: unless-stopped
+
+volumes:
+  openask-data:
