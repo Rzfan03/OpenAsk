@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TextInput,
   TouchableOpacity, SafeAreaView,
@@ -70,6 +70,9 @@ export default function PersonalityScreen() {
   const router = useRouter();
   const { personality, setPersonalityField, setPreset, resetPersonality } = useSettingsStore();
   const [localPrompt, setLocalPrompt] = useState(personality.systemPrompt);
+  useEffect(() => {
+    setLocalPrompt(personality.systemPrompt);
+  }, [personality.systemPrompt]);
 
   const handleSavePrompt = useCallback(() => {
     setPersonalityField('systemPrompt', localPrompt);
@@ -159,7 +162,7 @@ export default function PersonalityScreen() {
         </View>
 
         {/* Reset */}
-        <TouchableOpacity style={styles.resetBtn} onPress={() => { resetPersonality(); setLocalPrompt('You are a helpful AI assistant.'); }}>
+        <TouchableOpacity style={styles.resetBtn} onPress={() => { resetPersonality(); }}>
           <Ionicons name="refresh-outline" size={16} color={Colors.error} />
           <Text style={styles.resetText}>Reset to Default</Text>
         </TouchableOpacity>
