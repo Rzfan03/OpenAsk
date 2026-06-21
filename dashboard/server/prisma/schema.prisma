@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Config {
+  id           String  @id @default("main")
+  password     String
+  tunnelUrl    String  @default("")
+  tunnelPort   Int     @default(20130)
+  cavemanMode  Boolean @default(false)
+  cacheEnabled Boolean @default(false)
+  cacheTTL     Int     @default(300)
+  avatarUrl    String  @default("")
+  themeMode    String  @default("dark")
+  themeAccent  String  @default("indigo")
+  workingDir   String  @default("")
+}
+
+model Cache {
+  id        String   @id
+  response  String
+  model     String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model Provider {
+  id            String  @id
+  name          String
+  apiKey        String  @default("")
+  selectedModel String  @default("")
+  baseUrl       String
+  isActive      Boolean @default(false)
+}
+
+model Personality {
+  id              String @id @default("main")
+  systemPrompt    String @default("You are a helpful AI assistant.")
+  temperature     Float  @default(0.7)
+  maxTokens       Int    @default(4096)
+  topP            Float  @default(1.0)
+  frequencyPenalty Float @default(0.0)
+  activePreset    String @default("Default")
+}
+
+model Skill {
+  id          String  @id
+  name        String
+  description String
+  systemPrompt String
+  icon        String  @default("Bot")
+  enabled     Boolean @default(false)
+}
+
+model Combo {
+  id    String      @id
+  name  String
+  items ComboItem[]
+}
+
+model Chat {
+  id        String    @id @default(cuid())
+  title     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  role      String
+  content   String
+  files     String   @default("[]")
+  chatId    String
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Session {
+  token     String   @id
+  createdAt DateTime @default(now())
+}
+
+model ComboItem {
+  id      String @id @default(cuid())
+  model   String
+  order   Int    @default(0)
+  comboId String
+  combo   Combo  @relation(fields: [comboId], references: [id], onDelete: Cascade)
+}

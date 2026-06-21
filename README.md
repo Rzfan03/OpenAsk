@@ -2,111 +2,152 @@
 
 <p>
   <img alt="License" src="https://img.shields.io/badge/license-MIT-blue.svg" />
-  <img alt="Platform" src="https://img.shields.io/badge/platform-Android-brightgreen.svg" />
-  <img alt="Expo" src="https://img.shields.io/badge/Expo-56-000020.svg?logo=expo" />
+  <img alt="Platform" src="https://img.shields.io/badge/platform-Web%20%2B%20Android-brightgreen.svg" />
   <img alt="PRs" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" />
 </p>
 
-**OpenAsk is an open-source Android AI chat client that connects to multiple providers — OpenAI, Anthropic, Gemini, Groq, and OpenRouter — through a single interface.**
-
-Unlike using separate apps or websites for each AI provider, OpenAsk gives you one place to chat with any model, customize how the AI responds with personality presets and fine-grained parameters, and manage all your API keys locally on your device.
+**OpenAsk is an open-source AI chat platform with a web dashboard and Android client, connecting to OpenAI, Anthropic, Gemini, Groq, and OpenRouter through a single interface.**
 
 ---
 
-## Features
+## Web Dashboard
 
-- **Multi-provider** — Switch between 5 providers without leaving the chat
-- **Personality presets** — Formal, Friendly, Sarkastik, Jenius, or custom system prompt with temperature, max tokens, top P, and frequency penalty controls
-- **Dynamic model fetching** — Pulls the latest available models directly from each provider's API
-- **Google OAuth** — Quick sign-in with Google via Clerk, no email/password required
+A self-hosted web interface for chatting with AI models, with file system tools, web search, skills/personality system, and conversation management.
+
+### Features
+
+- **Multi-provider** — Switch between OpenAI, Anthropic, Gemini, Groq, OpenRouter in one place
+- **Personality system** — Custom system prompts with temperature, max tokens, top P, frequency penalty controls
+- **Skills** — Enable/disable capabilities (web search, code review, debugging, etc.) that inject system prompts
+- **File system tools** — AI can read, write, edit, list, and delete files in a configured working directory
+- **Web search** — AI can search the web for current information via DuckDuckGo
+- **Image attachments** — Send images to vision-capable models (GPT-4o, Claude 4, Gemini 2.5, etc.)
 - **Real-time streaming** — Token-by-token streaming from all supported providers
-- **Conversation history** — Auto-titled, persistent, searchable history
-- **File attachments** — Attach text and binary files to your messages
-- **Local-first** — All API keys stored on-device, never sent to any server
+- **Conversation history** — Auto-titled, persistent chat history with SQLite
+- **Response caching** — Optional cache for repeated queries to save tokens
+- **Tunneling** — Expose your instance via Cloudflare Tunnel
+- **Dark/light theme** — Customizable with accent color picker
+- **Token usage tracking** — Dashboard with token usage history chart
+- **Session persistence** — Auth tokens stored in SQLite, survive server restarts
 
----
-
-## Supported Providers & Models
-
-| Provider | Default Models |
-|----------|---------------|
-| **Groq** (default) | Llama 3.3 70B, Llama 3.1 8B, Mixtral 8x7B |
-| **OpenAI** | GPT-4o, GPT-4o Mini, GPT-4 Turbo, o1-mini |
-| **Anthropic** | Claude 3.5 Sonnet, Claude 3.5 Haiku, Claude 3 Opus |
-| **Google Gemini** | Gemini 2.0 Flash, Gemini 1.5 Pro, Gemini 1.5 Flash |
-| **OpenRouter** | GPT-4o, Claude 3.5 Sonnet, Gemini 2.0 Flash, Llama 3.3 70B, DeepSeek R1, Mistral Large |
-
-When you add your API key in Settings, the app automatically fetches the complete model list from each provider.
-
----
-
-## Tech Stack
+### Tech Stack
 
 | Layer | |
 |-------|---|
-| Framework | Expo SDK 56 / React Native 0.85 |
-| Navigation | Expo Router v4 with Drawer |
-| Auth | Clerk (Google OAuth) |
-| State | Zustand + AsyncStorage |
-| Storage | expo-secure-store, AsyncStorage |
-| UI | React Native, Ionicons, react-native-markdown-display |
+| Frontend | React 19, Vite 6, Tailwind CSS v4, Radix UI, React Router v7, Lucide React |
+| Backend | Express 5, Prisma 6, TypeScript 6 |
+| Database | SQLite (via Prisma) |
+| Auth | bcryptjs password, token-based sessions in DB |
+
+### Quick Start
+
+```bash
+cd dashboard
+npm install
+npx prisma db push --schema=server/prisma/schema.prisma
+npx prisma generate --schema=server/prisma/schema.prisma
+npm run db:seed
+npm run dev
+```
+
+Default password: `admin123`
+
+The Vite dev server runs on `http://localhost:20128` (proxies API to Express on port 20130).
+
+### Configuration
+
+1. Open the dashboard and go to **Dashboard > Overview**
+2. Click **Settings** to set your working directory
+3. Go to **Personality** to customize the AI's behavior
+4. Add API keys for your preferred providers in **Settings**
+5. Enable **Skills** like Web Search from the Skills page
+
+### Commands
+
+```bash
+npm run dev           # Start dev server (Vite + Express concurrently)
+npm run build         # Build for production
+npm start             # Start production server
+npm run db:seed       # Reset seed data (providers, skills, etc.)
+```
+
+### API Routes
+
+| Route | Description |
+|-------|-------------|
+| `/api/auth/login` | Login with password |
+| `/api/auth/logout` | Logout |
+| `/api/config/settings` | App configuration |
+| `/api/config/providers` | Provider management |
+| `/api/config/test-model` | Test provider connection |
+| `/api/chat/stream` | SSE streaming chat endpoint |
+| `/api/chats` | Conversation CRUD |
+| `/api/skills` | Skills CRUD |
+| `/api/community-skills` | Community skill store |
+| `/api/stats` | Token usage stats |
+| `/api/tunnel` | Cloudflare Tunnel management |
+
+### Providers & Models
+
+| Provider | Default Model |
+|----------|---------------|
+| **OpenRouter** | openai/gpt-4o |
+| **OpenAI** | gpt-4o |
+| **Anthropic** | claude-3-5-sonnet-20241022 |
+| **Google Gemini** | gemini-2.0-flash |
+| **Groq** (default) | llama-3.3-70b-versatile |
 
 ---
 
-## Quick Start
+## Android App
+
+The Android app (Expo SDK 56 / React Native) is the original mobile client. See the `app/` directory.
 
 ```bash
-git clone https://github.com/Rzfan03/OpenAsk.git
-cd OpenAsk
 npm install
-cp .env.local.example .env.local
-```
-
-Edit `.env.local`:
-
-```
-EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-EXPO_PUBLIC_GROQ_API_KEY=gsk_...
-```
-
-Get a [Clerk key](https://clerk.com) and a [Groq key](https://groq.com), then:
-
-```bash
 npx expo start
 ```
 
-Scan the QR code with Expo Go, or press `a` for Android emulator.
-
 ---
+
+## Documentation
+
+Full documentation is in the [`docs/`](docs/) directory:
+
+| Document | Description |
+|----------|-------------|
+| [Setup Guide](docs/setup.md) | Installation, configuration, quick start |
+| [Architecture](docs/architecture.md) | System design, database schema, AI flow |
+| [Features](docs/features.md) | All features documented |
+| [API Reference](docs/api.md) | Complete API endpoint docs |
+| [Deployment Guide](docs/deployment.md) | Production deployment, Docker, Nginx |
 
 ## Project Structure
 
 ```
-app/
-  _layout.tsx             ClerkProvider + push notifications
-  index.tsx               Auth redirect
-  (auth)/sign-in.tsx      Google OAuth screen
-  (app)/_layout.tsx       Drawer navigator with user profile
-  (app)/index.tsx         Main chat screen
-  (app)/history.tsx       Conversation history
-  (app)/settings.tsx      API key management per provider
-  (app)/personality.tsx   Personality presets and parameter sliders
-components/               ChatBubble, MessageInput, ModelSelector
-lib/                      aiStream, modelFetcher, filePicker, notifications
-store/                    settingsStore, chatStore, notifStore
-constants/                Colors, providers
+dashboard/
+  src/
+    routes/            Page components
+    components/        UI components (Radix-based)
+    lib/               API client, hooks
+  server/
+    routes/            Express API routes
+    lib/               Tools, AI streaming, auth, cache
+    prisma/            Schema, migrations, seed
+  vite.config.ts       Vite config with API proxy
+app/                   Expo/React Native mobile app
+components/            Shared React Native components
+lib/                   Shared utilities
+store/                 Zustand stores (mobile)
 ```
 
----
+## Security
 
-## Building
-
-```bash
-npx expo export --platform android                 # JS bundle + assets
-eas build --platform android --profile preview     # APK via EAS Build
-```
-
----
+- Passwords hashed with bcryptjs
+- Auth tokens stored in SQLite (not in-memory)
+- File system tools are restricted to the configured working directory
+- API keys stored in DB, transmitted only to their respective providers
+- All routes except `/api/auth/login` require authentication
 
 ## License
 
