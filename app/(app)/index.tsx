@@ -23,14 +23,17 @@ export default function ChatScreen() {
     createConversation, addMessage, updateLastMessage,
     setStreaming, isStreaming, getActiveConversation, activeConversationId,
   } = useChatStore();
-  const { activeProviderId, providers, getActiveProvider } = useSettingsStore();
+  const { activeProviderId, providers, getActiveProvider, fetchedModels } = useSettingsStore();
 
   const conversation = getActiveConversation();
   const messages = conversation?.messages ?? [];
 
   const activeConfig = getActiveProvider();
   const providerInfo = PROVIDERS.find((p) => p.id === activeProviderId);
+  const fetchedModelList = fetchedModels[activeProviderId] ?? [];
+  const fetchedName = fetchedModelList.find((m) => m.id === activeConfig?.selectedModel)?.name;
   const modelName = providerInfo?.models.find((m) => m.id === activeConfig?.selectedModel)?.name
+    ?? fetchedName
     ?? activeConfig?.selectedModel
     ?? 'Select Model';
 
