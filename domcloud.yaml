@@ -1,0 +1,14 @@
+commands:
+  - NPM=`which npm`
+  - cd dashboard
+  - $NPM install
+  - $NPM run build
+  - '[ -f dashboard/.env ] || touch dashboard/.env'
+features:
+  - node
+nginx:
+  root: dashboard/dist
+  passenger:
+    enabled: on
+    app_env: production
+    app_start_command: cd dashboard && env PORT=$PORT npx tsx server/index.ts

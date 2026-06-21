@@ -67,26 +67,38 @@ The dashboard provides a Tunnel page to start/stop tunnels.
 
 ## DOMCloud
 
-[DOMCloud](https://domcloud.co) is an Indonesian PaaS that supports Node.js apps with SQLite persistent storage.
+[DOMCloud](https://domcloud.co) is an Indonesian PaaS.
 
-### Steps
+### Setup
 
-1. Push your code to GitHub
-2. Go to DOMCloud dashboard → **New App** → **Connect GitHub**
-3. Select your repository
-4. Set these configurations:
+A `domcloud.yaml` is at the project root — DOMCloud auto-detects it.
 
-| Setting | Value |
-|---------|-------|
-| Root Directory | `dashboard/` |
-| Runtime | Node.js |
-| Build Command | `npm run build` |
-| Start Command | `npm start` |
-| Persistent Storage | mount at `server/prisma/` |
-| HTTP Port | `20130` |
+```yaml
+# domcloud.yaml — configures build, nginx, and Passenger
+commands:
+  - NPM=`which npm`
+  - cd dashboard
+  - $NPM install
+  - $NPM run build
+features:
+  - node
+nginx:
+  root: dashboard/dist
+  passenger:
+    enabled: on
+    app_env: production
+    app_start_command: cd dashboard && env PORT=$PORT npx tsx server/index.ts
+```
 
-5. **Persistent Storage** is required — SQLite database must survive deploys
-6. Deploy
+### Manual Steps
+
+1. Push code to GitHub
+2. DOMCloud dashboard → **New App** → **Connect GitHub**
+3. Set **Persistent Storage** → mount at `dashboard/server/prisma/`
+4. Set **HTTP Port** → `20130`
+5. Deploy
+
+Persistent Storage is required — SQLite database must survive deploys.
 
 ### Post-Deploy
 
@@ -95,26 +107,6 @@ The dashboard provides a Tunnel page to start/stop tunnels.
 3. Change the password immediately
 4. Add API keys for your providers
 5. Set a working directory
-
-### Notes
-
-- The `postinstall` script automatically generates the Prisma client after `npm install`
-- The `start` script runs `prisma db push` to ensure the database schema is up to date
-- SSE streaming works via DOMCloud's WebSocket support — no special config needed
-
-## Docker
-
-A multi-stage `Dockerfile` is at the project root.
-
-```bash
-docker build -t openask .
-docker run -d \
-  -p 20130:20130 \
-  -v openask-data:/app/server/prisma \
-  openask
-```
-
-The `/app/server/prisma` volume persists the SQLite database across restarts.
 
 ## Environment Variables
 
