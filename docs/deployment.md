@@ -102,23 +102,19 @@ The dashboard provides a Tunnel page to start/stop tunnels.
 - The `start` script runs `prisma db push` to ensure the database schema is up to date
 - SSE streaming works via DOMCloud's WebSocket support — no special config needed
 
-## Docker (Manual)
+## Docker
 
-```dockerfile
-FROM node:20-alpine
-WORKDIR /app
-COPY dashboard/package*.json ./
-RUN npm install
-COPY dashboard/ .
-RUN npm run build
-EXPOSE 20130
-CMD ["npm", "start"]
-```
+A multi-stage `Dockerfile` is at the project root.
 
 ```bash
 docker build -t openask .
-docker run -d -p 20130:20130 -v openask-data:/app/server/prisma openask
+docker run -d \
+  -p 20130:20130 \
+  -v openask-data:/app/server/prisma \
+  openask
 ```
+
+The `/app/server/prisma` volume persists the SQLite database across restarts.
 
 ## Environment Variables
 
