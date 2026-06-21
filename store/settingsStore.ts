@@ -33,14 +33,14 @@ type SettingsStore = {
   setActiveProvider: (providerId: string) => void;
   getActiveProvider: () => ProviderConfig | null;
   getApiKey: (providerId: string) => string;
-  setPersonalityField: (field: keyof PersonalityConfig, value: any) => void;
+  setPersonalityField: <K extends keyof PersonalityConfig>(field: K, value: PersonalityConfig[K]) => void;
   setPreset: (presetName: string) => void;
   resetPersonality: () => void;
   setFetchedModels: (providerId: string, models: FetchedModel[]) => void;
 };
 
 const PRESETS: Record<string, Partial<PersonalityConfig>> = {
-  Default: { systemPrompt: 'You are a helpful AI assistant.', temperature: 0.7, activePreset: 'Default' },
+  Default: { activePreset: 'Default' },
   Formal: { systemPrompt: 'You are a professional assistant. Respond formally and concisely. Use proper grammar and avoid casual language.', temperature: 0.3, activePreset: 'Formal' },
   Friendly: { systemPrompt: 'You are a warm, friendly assistant. Be approachable and conversational. Use a relaxed tone.', temperature: 0.8, activePreset: 'Friendly' },
   Sarkastik: { systemPrompt: 'You are a witty, sarcastic assistant. Use humor and irony in your responses.', temperature: 0.9, activePreset: 'Sarkastik' },
@@ -58,7 +58,7 @@ const DEFAULT_PERSONALITY: PersonalityConfig = {
 
 const defaultProviders: ProviderConfig[] = PROVIDERS.map((p) => ({
   providerId: p.id,
-  apiKey: p.id === 'groq' ? 'gsk_redacted' : '',
+  apiKey: p.id === 'groq' ? (process.env.EXPO_PUBLIC_GROQ_API_KEY ?? '') : '',
   selectedModel: p.models[0]?.id ?? '',
 }));
 
