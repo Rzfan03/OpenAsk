@@ -74,20 +74,16 @@ The dashboard provides a Tunnel page to start/stop tunnels.
 A `domcloud.yaml` is at the project root — DOMCloud auto-detects it.
 
 ```yaml
-# domcloud.yaml — configures build, nginx, and Passenger
 commands:
-  - NPM=`which npm`
-  - cd dashboard
-  - $NPM install
-  - $NPM run build
+- cd dashboard && npm install && npm run build
 features:
-  - node
+- node
 nginx:
   root: dashboard/dist
   passenger:
     enabled: on
     app_env: production
-    app_start_command: cd dashboard && env PORT=$PORT npx tsx server/index.ts
+    app_start_command: cd dashboard && env PORT=$PORT node_modules/.bin/tsx server/index.ts
 ```
 
 ### Manual Steps
