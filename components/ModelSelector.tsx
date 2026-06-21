@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   View, Text, TouchableOpacity, ScrollView,
-  StyleSheet, ActivityIndicator,
+  StyleSheet, ActivityIndicator, Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSettingsStore } from '../store/settingsStore';
@@ -30,8 +30,11 @@ export function ModelSelector({ onClose }: Props) {
     try {
       const models = await fetchModelsForProvider(providerId, config?.apiKey ?? '');
       setFetchedModels(providerId, models);
-    } catch {}
-    setRefreshing(null);
+    } catch (e: any) {
+      Alert.alert('Error', e?.message ?? 'Failed to fetch models');
+    } finally {
+      setRefreshing(null);
+    }
   };
 
   return (
