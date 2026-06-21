@@ -26,19 +26,21 @@ export async function streamChat(
   const hasSystemPrompt = systemPrompt && systemPrompt !== 'You are a helpful AI assistant.';
 
   try {
+    const chatMsgs = messages.filter((m) => m.role !== 'system');
+
     if (activeProvider.providerId === 'anthropic') {
-      await streamAnthropic(messages, model, apiKey, hasSystemPrompt ? systemPrompt : undefined, temperature, maxTokens, onChunk, onDone, onError);
+      await streamAnthropic(messages, model, apiKey, hasSystemPrompt ? systemPrompt : undefined, temperature, maxTokens, topP, onChunk, onDone, onError);
       return;
     }
 
     if (activeProvider.providerId === 'google') {
-      await streamGemini(messages, model, apiKey, baseUrl, hasSystemPrompt ? systemPrompt : undefined, temperature, maxTokens, onChunk, onDone, onError);
+      await streamGemini(messages, model, apiKey, baseUrl, hasSystemPrompt ? systemPrompt : undefined, temperature, maxTokens, topP, onChunk, onDone, onError);
       return;
     }
 
     const body: Record<string, any> = {
       model,
-      messages: hasSystemPrompt ? [{ role: 'system', content: systemPrompt }, ...messages] : messages,
+      messages: hasSystemPrompt ? [{ role: 'system', content: systemPrompt }, ...chatMsgs] : chatMsgs,
       stream: true,
       temperature,
       max_tokens: maxTokens,
@@ -99,6 +101,7 @@ async function streamAnthropic(
   systemPrompt: string | undefined,
   temperature: number,
   maxTokens: number,
+  topP: number,
   onChunk: (c: string) => void,
   onDone: () => void,
   onError: (e: string) => void
@@ -117,6 +120,7 @@ async function streamAnthropic(
       model,
       max_tokens: maxTokens,
       temperature,
+      top_p: topP,
       stream: true,
       ...((systemPrompt || systemMsg) && { system: systemPrompt ?? systemMsg!.content }),
       messages: chatMsgs,
@@ -155,6 +159,7 @@ async function streamGemini(
   systemPrompt: string | undefined,
   temperature: number,
   maxTokens: number,
+  topP: number,
   onChunk: (c: string) => void,
   onDone: () => void,
   onError: (e: string) => void
@@ -168,6 +173,7 @@ async function streamGemini(
     generationConfig: {
       temperature,
       maxOutputTokens: maxTokens,
+      topP,
     },
   };
 
