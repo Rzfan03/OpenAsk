@@ -43,7 +43,7 @@ Edit `.env.local` to add the Groq key:
 
 ```
 EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
-EXPO_PUBLIC_GROQ_API_KEY=gsk_redacted
+EXPO_PUBLIC_GROQ_API_KEY=gsk_your_groq_api_key_here
 ```
 
 - [ ] **Step 2: Copy env for type generation**
