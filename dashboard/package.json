@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "concurrently \"vite\" \"tsx watch server/index.ts\"",
     "build": "vite build && tsc -p tsconfig.node.json",
-    "start": "node server/index.js",
+    "start": "prisma generate --schema=server/prisma/schema.prisma && prisma db push --schema=server/prisma/schema.prisma && tsx server/index.ts",
+    "postinstall": "prisma generate --schema=server/prisma/schema.prisma",
     "db:generate": "prisma generate --schema=server/prisma/schema.prisma",
     "db:push": "prisma db push --schema=server/prisma/schema.prisma",
     "db:seed": "tsx server/prisma/seed.ts"

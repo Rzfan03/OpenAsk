@@ -65,6 +65,43 @@ cloudflared tunnel --url http://localhost:20130
 
 The dashboard provides a Tunnel page to start/stop tunnels.
 
+## DOMCloud
+
+[DOMCloud](https://domcloud.co) is an Indonesian PaaS that supports Node.js apps with SQLite persistent storage.
+
+### Steps
+
+1. Push your code to GitHub
+2. Go to DOMCloud dashboard → **New App** → **Connect GitHub**
+3. Select your repository
+4. Set these configurations:
+
+| Setting | Value |
+|---------|-------|
+| Root Directory | `dashboard/` |
+| Runtime | Node.js |
+| Build Command | `npm run build` |
+| Start Command | `npm start` |
+| Persistent Storage | mount at `server/prisma/` |
+| HTTP Port | `20130` |
+
+5. **Persistent Storage** is required — SQLite database must survive deploys
+6. Deploy
+
+### Post-Deploy
+
+1. Open the app URL
+2. Login with `admin123`
+3. Change the password immediately
+4. Add API keys for your providers
+5. Set a working directory
+
+### Notes
+
+- The `postinstall` script automatically generates the Prisma client after `npm install`
+- The `start` script runs `prisma db push` to ensure the database schema is up to date
+- SSE streaming works via DOMCloud's WebSocket support — no special config needed
+
 ## Docker (Manual)
 
 ```dockerfile

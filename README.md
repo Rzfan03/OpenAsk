@@ -99,17 +99,6 @@ npm run db:seed       # Reset seed data (providers, skills, etc.)
 
 ---
 
-## Android App
-
-The Android app (Expo SDK 56 / React Native) is the original mobile client. See the `app/` directory.
-
-```bash
-npm install
-npx expo start
-```
-
----
-
 ## Documentation
 
 Full documentation is in the [`docs/`](docs/) directory:
@@ -135,10 +124,6 @@ dashboard/
     lib/               Tools, AI streaming, auth, cache
     prisma/            Schema, migrations, seed
   vite.config.ts       Vite config with API proxy
-app/                   Expo/React Native mobile app
-components/            Shared React Native components
-lib/                   Shared utilities
-store/                 Zustand stores (mobile)
 ```
 
 ## Security
